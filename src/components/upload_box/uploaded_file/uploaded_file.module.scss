@@ -1,0 +1,82 @@
+
+$file-image-size: 40px;
+$close-image-size: 15px;
+
+.uploaded {
+  width: 375px;
+  margin: 10px;
+  padding: 15px;
+  background-color: #e6f5e9;
+  border-radius: 10px;
+  display: grid;
+  grid-template-areas:
+  "image filename remove"
+  "image progress progress"
+  "content content content";
+  grid-template-columns: $file-image-size calc(100% - #{$file-image-size} - #{$close-image-size} - 30px) $close-image-size;
+  grid-column-gap: 15px;
+}
+
+.image {
+  grid-area: image;
+  width: $file-image-size;
+}
+
+.image img {
+  width: 100%;
+  height: 100%;
+}
+
+.remove {
+  grid-area: remove;
+  width: $close-image-size;
+  cursor: pointer;
+}
+
+.remove img {
+  width: $close-image-size;
+  height: $close-image-size;
+}
+
+.file_name {
+  grid-area: filename;
+  color: #0c3214;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+}
+
+
+.progress {
+  grid-area: progress;
+}
+
+@keyframes progress_bar_stripes {
+  from { background-position: 1rem 0; }
+  to { background-position: 0 0; }
+}
+
+.progress {
+  display: flex;
+  height: 1rem;
+  overflow: hidden;
+  font-size: .75rem;
+  background-color: #e9ecef;
+  border-radius: .25rem;
+}
+
+.progress_bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #28a745;
+  background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+  background-size: 1rem 1rem;
+  animation: progress_bar_stripes 1s linear infinite;
+}
+
+.content {
+  grid-area: content;
+}
