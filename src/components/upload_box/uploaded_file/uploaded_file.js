@@ -64,7 +64,7 @@ class UploadedFile extends React.Component {
         });
 
         // Send POST request to server
-        request.open("POST", "http://127.0.0.1:8000/extract/rar");
+        request.open("POST", "https://api.xtract.cx/extract/rar");
         request.send(data);
     }
 
