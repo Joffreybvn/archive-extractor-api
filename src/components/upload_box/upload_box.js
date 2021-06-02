@@ -10,28 +10,46 @@ import UploadedFile from "./uploaded_file/uploaded_file";
 
 class UploadBox extends React.Component {
 
-    triggerInputFile() {
+     constructor(props) {
+        super(props);
+
+        this.state = {
+            uploadedFiles: []
+        }
+
+    }
+
+    triggerInputFile = () => {
         document.getElementById('file-selector').click()
     }
 
-    uploadFiles(event) {
-        const fileList = event.target.files;
+    uploadFiles = (event) => {
 
-        fetch("http://postman-echo.com/post", {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/x-rar-compressed"
-            },
-            body: fileList[0]
-        }).then(
-            response => response.json()
-        ).then(
-            success => console.log(success)
-        ).catch(
-            error => console.log(error)
-        );
+         // Create UploadedFile components
+        for (let file of event.target.files) {
+
+            let key = Math.floor(Math.random() * 10000);
+            this.setState({
+                uploadedFiles: [...this.state.uploadedFiles, <UploadedFile file={file} key={key} removeFile={this.removeFile(this)}/>]
+            })
+        }
+
+        // Clear the input
+        document.getElementById('file-selector').value = "";
     }
 
+    removeFile = (parent) => {
+         const self = parent;
+
+         return (index) => {
+             const newUploadedFiles = [...self.state.uploadedFiles];
+             newUploadedFiles.splice(index, 1);
+
+             self.setState((state) => ({
+                 uploadedFiles: newUploadedFiles
+             }))
+         }
+    }
 
     render() {
         return (
@@ -40,9 +58,7 @@ class UploadBox extends React.Component {
                     <input type="file" id="file-selector" accept=".rar" multiple onChange={this.uploadFiles}/>
                     <p>Drag files here or <span className={upload_button} onClick={this.triggerInputFile}>Browse</span></p>
                 </div>
-                <UploadedFile filename="archive_example.rar"/>
-                <UploadedFile filename="dolor_sit.rar"/>
-                <UploadedFile filename="amet_consecetur.rar"/>
+                {this.state.uploadedFiles}
             </div>
         )
     }

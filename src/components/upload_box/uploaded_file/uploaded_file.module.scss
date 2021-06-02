@@ -12,7 +12,8 @@ $close-image-size: 15px;
   grid-template-areas:
   "image filename remove"
   "image progress progress"
-  "content content content";
+  "content content content"
+  "bin download download";
   grid-template-columns: $file-image-size calc(100% - #{$file-image-size} - #{$close-image-size} - 30px) $close-image-size;
   grid-column-gap: 15px;
 }
@@ -79,4 +80,12 @@ $close-image-size: 15px;
 
 .content {
   grid-area: content;
+}
+
+.bin {
+  grid-area: bin;
+}
+
+.download {
+  grid-area: download;
 }
