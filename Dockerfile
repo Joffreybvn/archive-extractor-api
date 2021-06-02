@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM brunneis/python:3.9.0-ubuntu-focal
 
 # Install the security updates
 RUN apt-get update
