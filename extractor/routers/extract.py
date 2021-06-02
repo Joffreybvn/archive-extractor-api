@@ -2,7 +2,7 @@
 import os
 import tempfile
 from fastapi import APIRouter, UploadFile, File, Response
-from .. import Archiver
+from .. import Archiver, Archive
 
 archiver = Archiver()
 router = APIRouter(
@@ -15,7 +15,7 @@ router = APIRouter(
 async def extract_rar(file: UploadFile = File(...)):
 
     # Check if the input file as a rar archive
-    if file.content_type == "application/x-rar-compressed":
+    if file.content_type in Archive.RAR.value:
 
         # Create a temporary directory to extract archive content
         with tempfile.TemporaryDirectory() as output_dir:
