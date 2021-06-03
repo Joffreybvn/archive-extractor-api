@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Xtract",
+  "name": "Small and easy online tool to extract compressed files",
   "icons": [
     {
       "src": "favicon.ico",
