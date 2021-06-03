@@ -21,4 +21,4 @@ RUN pip install -r requirements.txt
 
 # Start the app
 ENTRYPOINT [ "uvicorn" ]
-CMD [ "extractor:app", "--reload" ]
+CMD [ "extractor:app", "--host", "0.0.0.0" ]
