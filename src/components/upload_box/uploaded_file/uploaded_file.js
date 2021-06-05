@@ -9,9 +9,7 @@ import {
     remove,
     progress,
     progress_bar,
-    content,
-    bin,
-    download
+    content
 } from "./uploaded_file.module.scss"
 
 
@@ -21,7 +19,9 @@ class UploadedFile extends React.Component {
         super(props);
 
         this.state = {
-            uploadPercent: 0
+            barPercent: 0,
+            barColor: '#28a745',
+            content: undefined,
         }
     }
 
@@ -33,7 +33,7 @@ class UploadedFile extends React.Component {
     }
 
     /**
-     * Upload the file with XMLHttpRequest, and update the progress bar.
+     * Upload the file with XMLHttpRequest, update the progress bar and handle the response.
      * @param file
      */
     uploadFile = (file) => {
@@ -50,21 +50,43 @@ class UploadedFile extends React.Component {
         // Upload progress event
         request.upload.addEventListener('progress', (event) => {
             this.setState({
-                uploadPercent: (event.loaded / event.total) * 100
+                barPercent: (event.loaded / event.total) * 100
             })
         });
 
-        // Request finished event
+        // Upload complete event
+        request.upload.addEventListener('load', (event) => {
+        })
+
+        // Response event
         request.addEventListener('load', (event) => {
 
-            let link = document.createElement('a');
-            link.href = window.URL.createObjectURL(request.response);
-            link.download = this.props.file.name + '.zip';
-            link.click();
+            // Success: Download the blob as file
+            if (request.status === 201) {
+                let link = document.createElement('a');
+                link.href = window.URL.createObjectURL(request.response);
+                link.download = this.props.file.name + '.zip';
+
+                link.click();
+            }
+
+            // Error: Display the error message
+            else if (request.status === 500) {
+                const reader = new FileReader();
+
+                reader.addEventListener("load", () => {
+                    this.setState({
+                        barColor: '#a72828',
+                        content: JSON.parse(reader.result)['message']
+                    })
+                });
+                reader.readAsText(request.response);
+            }
         });
 
         // Send POST request to server
         request.open("POST", "https://api.xtract.cx/extract/rar");
+        // request.open("POST", "http://127.0.0.1:8000/extract/rar");
         request.send(data);
     }
 
@@ -83,11 +105,9 @@ class UploadedFile extends React.Component {
                     <img src={RemoveImage} alt="Remove" title="Remove" onClick={this.removeFile}/>
                 </div>
                 <div className={progress}>
-                    <div className={progress_bar} style={{width: `${this.state.uploadPercent}%`}}/>
+                    <div className={progress_bar} style={{width: `${this.state.barPercent}%`, backgroundColor: this.state.barColor}}/>
                 </div>
-                <div className={content} />
-                <div className={bin} />
-                <div className={download} />
+                <div className={content}>{this.state.content}</div>
             </div>
         )
     }

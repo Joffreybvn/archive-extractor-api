@@ -12,10 +12,10 @@ $close-image-size: 15px;
   grid-template-areas:
   "image filename remove"
   "image progress progress"
-  "content content content"
-  "bin download download";
+  "image content content";
   grid-template-columns: $file-image-size calc(100% - #{$file-image-size} - #{$close-image-size} - 30px) $close-image-size;
   grid-column-gap: 15px;
+  grid-row-gap: 5px;
 }
 
 .image {
@@ -25,7 +25,6 @@ $close-image-size: 15px;
 
 .image img {
   width: 100%;
-  height: 100%;
 }
 
 .remove {
@@ -42,8 +41,11 @@ $close-image-size: 15px;
 .file_name {
   grid-area: filename;
   color: #0c3214;
-  font-size: 18px;
+  line-height: 18px;
   letter-spacing: 1.5px;
+  height: 18px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 
@@ -72,7 +74,6 @@ $close-image-size: 15px;
   color: #fff;
   text-align: center;
   white-space: nowrap;
-  background-color: #28a745;
   background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
   background-size: 1rem 1rem;
   animation: progress_bar_stripes 1s linear infinite;
@@ -80,12 +81,5 @@ $close-image-size: 15px;
 
 .content {
   grid-area: content;
-}
-
-.bin {
-  grid-area: bin;
-}
-
-.download {
-  grid-area: download;
+  line-height: 18px;
 }
