@@ -2,6 +2,7 @@
 import os
 import io
 import rarfile
+from typing import Tuple
 from zipfile import ZipFile
 
 
@@ -23,7 +24,13 @@ class Archiver:
         return buffer
 
     @staticmethod
-    def extract_rar(file, output_dir: str) -> None:
+    def extract_rar(file, output_dir: str) -> Tuple[bool, str]:
 
         with rarfile.RarFile(file) as writer:
-            writer.extractall(output_dir)
+            try:
+                writer.extractall(output_dir)
+
+            except rarfile.PasswordRequired:
+                return False, "Your file is protected by a password"
+            else:
+                return True
