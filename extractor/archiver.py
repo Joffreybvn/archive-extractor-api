@@ -2,7 +2,7 @@
 import os
 import io
 import rarfile
-from typing import Tuple
+from typing import Tuple, Optional
 from zipfile import ZipFile
 
 
@@ -24,7 +24,7 @@ class Archiver:
         return buffer
 
     @staticmethod
-    def extract_rar(file, output_dir: str) -> Tuple[bool, str]:
+    def extract_rar(file, output_dir: str) -> Tuple[bool, Optional[str]]:
 
         with rarfile.RarFile(file) as writer:
             try:
@@ -33,4 +33,4 @@ class Archiver:
             except rarfile.PasswordRequired:
                 return False, "Your file is protected by a password"
             else:
-                return True
+                return True, None
