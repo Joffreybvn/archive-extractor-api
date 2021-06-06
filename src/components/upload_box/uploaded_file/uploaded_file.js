@@ -21,6 +21,8 @@ class UploadedFile extends React.Component {
         this.state = {
             barPercent: 0,
             barColor: '#28a745',
+            barAnimation: 'progress_bar_stripes 1s linear infinite',
+            barDisplay: 'flex',
             content: undefined,
         }
     }
@@ -50,12 +52,16 @@ class UploadedFile extends React.Component {
         // Upload progress event
         request.upload.addEventListener('progress', (event) => {
             this.setState({
-                barPercent: (event.loaded / event.total) * 100
+                barPercent: (event.loaded / event.total) * 100,
+                content: "Uploading"
             })
         });
 
         // Upload complete event
         request.upload.addEventListener('load', (event) => {
+            this.setState({
+                content: "Extracting"
+            })
         })
 
         // Response event
@@ -64,10 +70,15 @@ class UploadedFile extends React.Component {
             // Success: Download the blob as file
             if (request.status === 201) {
                 let link = document.createElement('a');
+                console.log(request.response)
                 link.href = window.URL.createObjectURL(request.response);
                 link.download = this.props.file.name + '.zip';
 
-                link.click();
+                // Create a download button
+                this.setState({
+                    barDisplay: 'none',
+                    content: <button onClick={() => {link.click()}}>Download</button>
+                })
             }
 
             // Error: Display the error message
@@ -77,6 +88,7 @@ class UploadedFile extends React.Component {
                 reader.addEventListener("load", () => {
                     this.setState({
                         barColor: '#a72828',
+                        animation: 'unset',
                         content: JSON.parse(reader.result)['message']
                     })
                 });
@@ -104,8 +116,12 @@ class UploadedFile extends React.Component {
                 <div className={remove}>
                     <img src={RemoveImage} alt="Remove" title="Remove" onClick={this.removeFile}/>
                 </div>
-                <div className={progress}>
-                    <div className={progress_bar} style={{width: `${this.state.barPercent}%`, backgroundColor: this.state.barColor}}/>
+                <div className={progress} style={{display: this.state.barDisplay}}>
+                    <div className={progress_bar} style={{
+                        width: `${this.state.barPercent}%`,
+                        backgroundColor: this.state.barColor,
+                        animation: this.state.barAnimation
+                    }}/>
                 </div>
                 <div className={content}>{this.state.content}</div>
             </div>

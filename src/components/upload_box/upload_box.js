@@ -16,7 +16,6 @@ class UploadBox extends React.Component {
         this.state = {
             uploadedFiles: []
         }
-
     }
 
     triggerInputFile = () => {
@@ -24,14 +23,16 @@ class UploadBox extends React.Component {
     }
 
     uploadFiles = (event) => {
+        event.preventDefault();
+        const files = event.target.files || event.dataTransfer.files
 
          // Create UploadedFile components
-        for (let file of event.target.files) {
+        for (let file of files) {
 
             let key = Math.floor(Math.random() * 10000);
-            this.setState({
-                uploadedFiles: [...this.state.uploadedFiles, <UploadedFile file={file} key={key} removeFile={this.removeFile(this)}/>]
-            })
+            this.setState(currentState => ({
+                uploadedFiles: [...currentState.uploadedFiles, <UploadedFile file={file} key={key} removeFile={this.removeFile(this)}/>]
+            }));
         }
 
         // Clear the input
@@ -41,11 +42,11 @@ class UploadBox extends React.Component {
     removeFile = (parent) => {
          const self = parent;
 
-         return (index) => {
+         return (key) => {
              const newUploadedFiles = [...self.state.uploadedFiles];
-             newUploadedFiles.splice(index, 1);
+             newUploadedFiles.splice(key, 1);
 
-             self.setState((state) => ({
+             self.setState(() => ({
                  uploadedFiles: newUploadedFiles
              }))
          }
@@ -54,8 +55,8 @@ class UploadBox extends React.Component {
     render() {
         return (
             <div className={wrapper}>
-                <div className={upload}>
-                    <input type="file" id="file-selector" accept=".rar" multiple onChange={this.uploadFiles}/>
+                <div className={upload} onDrop={this.uploadFiles} onDragOver={(event) => {event.preventDefault()}}>
+                    <input type="file" id="file-selector" accept=".rar" onChange={this.uploadFiles} multiple/>
                     <p>Drag files here or <span className={upload_button} onClick={this.triggerInputFile}>Browse</span></p>
                 </div>
                 {this.state.uploadedFiles}
