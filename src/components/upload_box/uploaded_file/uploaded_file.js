@@ -46,7 +46,6 @@ class UploadedFile extends React.Component {
 
         // Create a request
         const request = new XMLHttpRequest();
-        request.withCredentials = true;
         request.responseType = 'blob';
 
         // Upload progress event
@@ -89,7 +88,7 @@ class UploadedFile extends React.Component {
                     this.setState({
                         barColor: '#a72828',
                         animation: 'unset',
-                        content: JSON.parse(reader.result)['message']
+                        content: JSON.parse(reader.result)['detail']
                     })
                 });
                 reader.readAsText(request.response);
@@ -97,8 +96,8 @@ class UploadedFile extends React.Component {
         });
 
         // Send POST request to server
-        request.open("POST", "https://api.xtract.cx/extract/rar");
-        // request.open("POST", "http://127.0.0.1:8000/extract/rar");
+        request.open("POST", "https://api.xtract.dev/extract");
+        // request.open("POST", "http://127.0.0.1:8000/extract");
         request.send(data);
     }
 
