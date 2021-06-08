@@ -2,7 +2,7 @@
 import os
 import io
 import rarfile
-from typing import Union
+import py7zr
 from zipfile import ZipFile
 
 
@@ -11,9 +11,8 @@ class Archiver:
     def __init__(self):
 
         self.extract_functions = {
-            # RAR .rar
-            "application/vnd.rar": self._extract_rar,
-            "application/x-rar-compressed": self._extract_rar
+            "application/x-rar-compressed": self._extract_rar,
+            "application/x-7z-compressed": self._extract_7z
         }
         self.types = self.extract_functions.keys()
 
@@ -21,7 +20,7 @@ class Archiver:
     def zip_from_directory(directory: str) -> io.BytesIO:
 
         buffer = io.BytesIO()
-        with ZipFile(buffer, 'w') as zip_buffer:
+        with ZipFile(buffer, 'w', strict_timestamps=False) as zip_buffer:
             for folderName, sub_folders, filenames in os.walk(directory):
                 for filename in filenames:
                     file_path = os.path.join(folderName, filename)
@@ -29,17 +28,17 @@ class Archiver:
 
         return buffer
 
-    def extract(self, archive_type: str, file, output_dir: str) -> Union[str, bool]:
-        return self.extract_functions[archive_type](file, output_dir)
+    def extract(self, archive_type: str, file, output_dir: str) -> None:
+        self.extract_functions[archive_type](file, output_dir)
 
     @staticmethod
-    def _extract_rar(file, output_dir: str) -> Union[str, bool]:
+    def _extract_rar(file, output_dir: str) -> None:
 
         with rarfile.RarFile(file) as writer:
-            try:
-                writer.extractall(output_dir)
+            writer.extractall(output_dir)
 
-            except rarfile.PasswordRequired:
-                return "Your file is protected by a password"
-            else:
-                return False
+    @staticmethod
+    def _extract_7z(file, output_dir: str) -> None:
+
+        with py7zr.SevenZipFile(file._file, mode='r') as archive:
+            archive.extractall(output_dir)
