@@ -36,8 +36,8 @@ class Archiver:
     @staticmethod
     def _extract_rar(file, output_dir: str) -> None:
 
-        with rarfile.RarFile(file) as writer:
-            writer.extractall(output_dir)
+        with rarfile.RarFile(file) as archive:
+            archive.extractall(output_dir)
 
     @staticmethod
     def _extract_7z(file, output_dir: str) -> None:
