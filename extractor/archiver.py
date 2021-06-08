@@ -3,6 +3,7 @@ import os
 import io
 import rarfile
 import py7zr
+import tarfile
 from zipfile import ZipFile
 
 
@@ -12,7 +13,8 @@ class Archiver:
 
         self.extract_functions = {
             "application/x-rar-compressed": self._extract_rar,
-            "application/x-7z-compressed": self._extract_7z
+            "application/x-7z-compressed": self._extract_7z,
+            "application/x-tar": self._extract_tar
         }
         self.types = self.extract_functions.keys()
 
@@ -41,4 +43,10 @@ class Archiver:
     def _extract_7z(file, output_dir: str) -> None:
 
         with py7zr.SevenZipFile(file._file, mode='r') as archive:
+            archive.extractall(output_dir)
+
+    @staticmethod
+    def _extract_tar(file, output_dir: str) -> None:
+
+        with tarfile.open(fileobj=file) as archive:
             archive.extractall(output_dir)
