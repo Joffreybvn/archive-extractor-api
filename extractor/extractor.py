@@ -5,9 +5,11 @@ import rarfile
 import py7zr
 import tarfile
 from zipfile import ZipFile
+from fastapi import HTTPException
+from starlette import status
 
 
-class Archiver:
+class Extractor:
 
     def __init__(self):
 
@@ -36,8 +38,15 @@ class Archiver:
     @staticmethod
     def _extract_rar(file, output_dir: str) -> None:
 
-        with rarfile.RarFile(file) as archive:
-            archive.extractall(output_dir)
+        try:
+            with rarfile.RarFile(file) as archive:
+                archive.extractall(output_dir)
+
+        except rarfile.PasswordRequired:
+            raise HTTPException(
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                detail="Your file is protected by a password"
+            )
 
     @staticmethod
     def _extract_7z(file, output_dir: str) -> None:

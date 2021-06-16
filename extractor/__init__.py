@@ -1,8 +1,8 @@
 
-from .archiver import Archiver
+from .extractor import Extractor
 from .app import app
 
 __all__ = [
     "app",
-    "Archiver"
+    "Extractor"
 ]

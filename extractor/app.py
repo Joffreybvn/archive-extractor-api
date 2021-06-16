@@ -1,14 +1,13 @@
 
 import os
 import tempfile
-import rarfile
 from fastapi import FastAPI, UploadFile, File, Response, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette import status
-from . import Archiver
+from . import Extractor
 
 
-archiver = Archiver()
+archiver = Extractor()
 app = FastAPI(
     title="Archive Extractor API",
     description="API to extract .rar files into .zip",
@@ -19,7 +18,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://oxi.cx",
+        "https://xtract.cx"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,7 +31,6 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {
-        "status": True,
         "detail": "Xtract API is online and working."
     }
 
@@ -46,24 +47,17 @@ async def extract_rar(file: UploadFile = File(...)):
 
     # Create a temporary directory and extract the archive content
     with tempfile.TemporaryDirectory() as output_dir:
-
-        try:
-            archiver.extract(file.content_type, file.file, output_dir)
-
-        except rarfile.PasswordRequired:
-            raise HTTPException(
-                status_code=status.HTTP_501_NOT_IMPLEMENTED,
-                detail="Your file is protected by a password"
-            )
+        archiver.extract(file.content_type, file.file, output_dir)
 
         # Create a zip archive
         buffer = archiver.zip_from_directory(output_dir)
-        archive_name, _ = os.path.splitext(file.filename)
 
-        return Response(
-            buffer.getvalue(),
-            status_code=201,
-            media_type="application/x-zip-compressed",
-            headers={
-                'Content-Disposition': f'attachment;filename={archive_name}.zip'
-            })
+    # Send the zip as response
+    archive_name, _ = os.path.splitext(file.filename)
+    return Response(
+        buffer.getvalue(),
+        status_code=201,
+        media_type="application/x-zip-compressed",
+        headers={
+            'Content-Disposition': f'attachment;filename={archive_name}.zip'
+        })
